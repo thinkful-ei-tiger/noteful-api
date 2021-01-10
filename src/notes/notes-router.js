@@ -38,18 +38,37 @@ notesRouter
       .catch(next);
   });
 
-notesRouter.route('/:id').get((req, res, next) => {
-  const { id } = req.params;
+notesRouter
+  .route('/:id')
+  .get((req, res, next) => {
+    const { id } = req.params;
 
-  NotesService.getNotesById(req.app.get('db'), id)
-    .then((note) => {
-      if (!note) {
-        return res.status(404).json({ error: `note doestn't exists` });
-      }
-      res.json(note);
-    })
-    .catch(next);
-});
+    NotesService.getNotesById(req.app.get('db'), id)
+      .then((note) => {
+        if (!note) {
+          return res.status(404).json({ error: `note doestn't exists` });
+        }
+        res.json(note);
+      })
+      .catch(next);
+  })
+  .delete((req, res, next) => {
+    const { id } = req.params;
+
+    NotesService.getNotesById(req.app.get('db'), id)
+      .then((note) => {
+        if (!note) {
+          return res.status(404).json({ error: `Not found` });
+        }
+      })
+      .catch(next);
+
+    NotesService.deleteNote(req.app.get('db'), id)
+      .then(() => {
+        return res.status(204).end();
+      })
+      .catch(next);
+  });
 
 notesRouter.route('/folders/:id').get((req, res, next) => {
   const { id } = req.params;
